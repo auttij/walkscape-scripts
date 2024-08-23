@@ -109,6 +109,11 @@ All activities seem to drop coral chests
 
 Wreck diving
 - Requires 35 Foraging & Agility
+- 80% Max Work Efficiency
+- Drops
+  - Seashells
+  - Gold
+  - Dinglehopper collectible
 
 Sea fishing (spear)
 - Requires 30 Fishing
@@ -195,8 +200,21 @@ Cave Diving
   - Light Source
 
 - Predator Fishing (Spear)
+  - Requires
+    - Fishing Spear
+    - x Fishing
+  - 120% Max Work efficiency
+  - Drops
+    - Raw Shark, anglerfish & squid
+    - Anglerfish mask collectible
+
 
 - Fossil Mining
+  - Requires 
+    - x Mining
+  - 40% Max work efficiency
+  - Drops
+    - 6 Unknown
 
 ### Chests
 Coral Chest
