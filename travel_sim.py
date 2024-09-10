@@ -79,28 +79,38 @@ def simulate_runs(
 def main():
 
     # for key in DISTANCES.keys():
-    key = "moderate"
+    key = "moderateHigh"
     multi = 1
     count = 500
     WE = 65
+    DA = 15
+    step_mod = 0
 
     print()
-    print(f"{key}: {get_distance(key, multi)} base steps")
-    print(f"simulating {count} runs")
+    print(f"simulating {count} runs with route:")
+    print(f"{key} - {get_distance(key, multi)} base steps")
     route = [key, multi]
 
-    stats_1 = route + [WE, 15, -5]
+    # No traveler's kit
+    stats_1 = route + [WE, DA, step_mod]
     runs, DA_procs_1 = zip(*list(simulate_runs(count, *stats_1)))
     print_stats(runs, *stats_1[2:])
 
-    stats_2 = route + [WE, 45, 5]
+    # traveler's kit
+    stats_2 = route + [WE, DA + 30, step_mod + 10]
     runs, DA_procs_2 = zip(*list(simulate_runs(count, *stats_2)))
     print_stats(runs, *stats_2[2:])
+
+    # Flowy trousers
+    stats_3 = route + [WE + 10, DA + 5, step_mod]
+    runs, DA_procs_3 = zip(*list(simulate_runs(count, *stats_3)))
+    print_stats(runs, *stats_3[2:])
     print("----------------------------")
 
     print("\nDA Procs")
     print_stats(DA_procs_1, *stats_1[2:])
     print_stats(DA_procs_2, *stats_2[2:])
+    print_stats(DA_procs_3, *stats_3[2:])
 
 
 if __name__ == "__main__":
