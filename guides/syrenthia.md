@@ -26,15 +26,18 @@ With your Rusty diving gear equipped, you can see Syrenthia, and access it from 
 
 ## Syrenthia
 ### Diving Gear
-There are three tiers of diving gear available
+There are 3 tiers of diving gear
 1. Rusty
-2. Kelp (Advanced diving gear)
-3. Hydrilium (Expert diving gear)
+2. Kelp (Advanced)
+3. Hydrilium (Expert)
   - Requires Complete the Swimming (Expert) activity 25 times
+
+There are more items that function as expert diving gear
+- Oxygen tank (back) from level 2 syrenthia reputation
+- Merfolk dress (chest) from syrenthia chest/merfolk dancing
 
 To do anything underwater you need to wear three pieces of diving gear. Certain locations might require a certain tier of diving gear, or higher.
 You will need to progress through them in order, the materials needed to craft a new tier are in areas where you need access to the previous tier.
-At syrenthia reputation 10 you unlock diving tank. A back slot item that functions as expert diving gear.
 
 ### Locations
 I will denote locations with the tier of diving gear required (1, 2, or 3) in parentheses.
@@ -120,6 +123,9 @@ Sea fishing (spear)
 
 Merfolk Dancing
 - Requires 30 Agility
+- +0.02 Syrenthia reputation per action
+- Drops
+  - Merfolk dress
 
 Kelp Foraging
 - Requires 35 Foraging & Woodcutting
@@ -169,6 +175,8 @@ Underwater Basket Weaving
   - scraps
   - 2 unknown drops
 
+-- split --
+
 Mine Tarsilium Ore (underwater)
 - Requires
   - 40 Mining
@@ -190,8 +198,8 @@ Mine Volcanic Rock
 - Drops:
   - Volcanic Rock (~90%)
   - Volcanic Ash (~5%)
-  - Opal
-  - 3 unknown drops
+  - Opal, Star pearl
+  - Very shiny stone collecitble
 
 Cave Diving
 - Requires
@@ -199,22 +207,21 @@ Cave Diving
   - Pickaxe
   - Light Source
 
-- Predator Fishing (Spear)
-  - Requires
-    - Fishing Spear
-    - x Fishing
-  - 120% Max Work efficiency
-  - Drops
-    - Raw Shark, anglerfish & squid
-    - Anglerfish mask collectible
+Predator Fishing (Spear)
+- Requires
+  - Fishing Spear
+  - x Fishing
+- 120% Max Work efficiency
+- Drops
+  - Raw Shark, anglerfish & squid
+  - Anglerfish mask collectible
 
-
-- Fossil Mining
-  - Requires 
-    - x Mining
-  - 40% Max work efficiency
-  - Drops
-    - 6 Unknown
+Fossil Mining
+- Requires 
+  - x Mining
+- 40% Max work efficiency
+- Drops
+  - 6 Unknown
 
 ### Chests
 Coral Chest
@@ -232,7 +239,16 @@ Chest of Syrenthia
   - pearls
   - Salty hops
   - Kelp rolls
-- 20 unknown drops
+- Uncommon
+  - Pearl amulet (neck)
+    - +14 crafting outcome while in syrenthia
+- Epic
+  - Tidal lure (tool fishing)
+    - +10% work eff., +20% chest find, -3 steps while fishing
+- Legendary
+  - Tentacle Crown (head)
+    - 40% fine material find, +30% chest find while underwater
+- 15+ unknown drops
 
 ### Realm reputation rewards
 - 5 rep
@@ -243,6 +259,7 @@ Chest of Syrenthia
     - Counts as Expert Diving gear
 - 20 rep
   - Mark of the Trident
+    - Doesn't do anything, apparently bugged
 - 30 rep
   - mark of the Serpent
 - 45 rep 
