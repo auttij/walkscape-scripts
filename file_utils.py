@@ -1,7 +1,8 @@
 import json
 import yaml
 from functools import lru_cache
-from os.path import exists
+from os.path import exists, join, relpath
+from os import walk
 
 def read_json(filepath):
   with open(filepath, 'r') as jf:
@@ -18,7 +19,7 @@ def read_yaml(filename):
 
 def get_localization(key):
   parts = key.split('.')
-  localization_file = f"data/{parts[0]}_en-US.yaml"
+  localization_file = f"data/{parts[0]}.yaml"
   if not exists(localization_file):
     return key
 
@@ -32,6 +33,19 @@ def get_named_data(filename):
   assert exists(filename)
   data = read_json(filename)
   return { get_localization(activity["name"]): activity for activity in data }
+
+def files_by_type(src, file_type, relative_path=False):
+  for root, dirs, files in walk(src):
+    for file in files:
+      if file.endswith(file_type):
+        if relative_path:
+          rel_dir = relpath(root, src)
+          yield(join(rel_dir, file))
+        else:
+          yield(join(root, file))
+
+def json_files(src, relative_path=False):
+  return [i for i in files_by_type(src, ".json", relative_path)]
 
 def main():
   pass
