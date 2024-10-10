@@ -3,6 +3,7 @@ from jsondiff import diff
 import filecmp
 from os.path import exists
 import json
+import sys
 
 
 class DiffTool:
@@ -162,267 +163,102 @@ class DiffTool:
         populate_wrapper(populated_diff, base_diff, "update")
         return populated_diff
 
-    def pretty_print(self):
-        print()
-        for category in self.diff:
-            diff = self.diff[category]
-            if diff:
-                print(f"====== {category.capitalize()} ======\n")
-                for name in diff:
-                    self.print_diff(name, diff[name], category)
+    def pretty_print_2(self, output_filename=None):
+        fname = output_filename if output_filename else sys.stdout
+        with open(fname, "w") as file:
+            for category in self.diff:
+                print(f"====== {category.capitalize()} ======\n", file=file)
+                diff = self.diff[category]
+                for key in diff:
+                    change = diff[key]
+                    action = change["action"]
+                    del change["action"]
 
-    def print_diff(self, name, data, category):
-        # action = data["action"]
-        # del data["action"]
-
-        # if action == "$insert":
-        #     print(f"added {name}")
-        # elif action == "$delete":
-        #     print(f"removed {name}")
-        # else:
-        print(name)
-        for key, value in data.items():
-            self.human_readable_diff(key, value, category)
-        print()
-
-    def human_readable_diff_old(self, key, value, action, category):
-        def inc_dec(v1, v2):
-            return "decrease" if v1 > v2 else "increase"
-
-        def value_inc_dec(v1, v2, text):
-            return f"{inc_dec(v1, v2)} {text}: {v1} -> {v2}"
-
-        def value_change(v1, v2, text):
-            return f"{text}: {v1} -> {v2}"
-
-        if key == "xpRewardsMap":
-            for skill, xp_diff in value.items():
-                print(value_inc_dec(xp_diff[0], xp_diff[1], f"{skill} xp"))
-
-        elif key == "parallax":
-            print("change background parallax")
-
-        elif key == "workRequired":
-            print(value_inc_dec(value[0], value[1], "work required"))
-
-        elif key == "maxWorkEfficiency":
-            print(value_inc_dec(value[0], value[1], "max work efficiency"))
-
-        elif key == "requirements":
-            try:
-                reqs = value[0]["requirements"]
-                for inner_obj in reqs.values():
-                    req = inner_obj["requirement"]
-                    for inner_key, inner_value in req.items():
-                        print(
-                            value_change(
-                                inner_value[0],
-                                inner_value[1],
-                                f"changed {inner_key} requirement",
-                            )
-                        )
-            except KeyError:
-                print(f"failed to find key for {value}")
-
-        elif key == "rewards":
-            try:
-                rews = value[0]["rewards"]
-                for inner_obj in rews.values():
-                    rew = inner_obj["reward"]
-                    for inner_key, inner_value in rew.items():
-                        print(
-                            value_change(
-                                inner_value[0],
-                                inner_value[1],
-                                f"changed {inner_key} reward",
-                            )
-                        )
-            except KeyError:
-                print(f"failed to find key for {value}")
-
-        elif key == "keywords":
-            print(value)
-            for inner_key, inner_values in value.items():
-                for inner_value in inner_values:
-                    print(f"{inner_key} keyword {inner_value}")
-
-        elif key == "materials":
-            print("changed materials")
-
-        elif key == "tableRows":
-            for inner_key, inner_values in value.items():
-                if "insert" in str(inner_key) or "delete" in str(inner_key):
-                    for _, inner_value in inner_values:
-                        print(f'{str(inner_key)} item: {inner_value["rowItemID"]}')
-                else:
-                    for ik, iv in inner_values.items():
-                        print(value_change(iv[0], iv[1], f"{ik} changed"))
-
-        elif key in [
-            "difficulty",
-            "path",
-            "activityIcon",
-            "itemIcon",
-            "locationDynamicBackgroundPath",
-        ]:
-            print(value_change(value[0], value[1], f"changed {key}"))
-
-        elif key in ["shownMaterials", "cardBackImage"]:
-            pass
-
-        else:
-            print(key, value)
-
-    def pretty_print_2(self):
-        print()
-        for category in self.diff:
-            print(f"====== {category.capitalize()} ======\n")
-            diff = self.diff[category]
-            for key in diff:
-                change = diff[key]
-                action = change["action"]
-                del change["action"]
-
-                if action != "update" or key in ["$insert", "$delete"]:
-                    name_keys = ["name", "id", "type"]
-                    found = [self.get_name(change[i]) for i in name_keys if i in change]
-                    new_key = found[0] if len(found) else key
-                    action_word = "added" if "insert" in action else "removed"
-                    print(action_word, new_key)
-                else:
-                    print(key.capitalize())
-                    for inner_key, inner_value in change.items():
-                        self.human_readable_diff(inner_key, inner_value)
-                    print()
-            print()
-
-    def human_readable_diff(self, key, value):
-        def action_word(key):
-            if "insert" in key:
-                return "added"
-            if "delete" in key:
-                return "removed"
-            return "changed"
-
-        def change_action(action, key):
-            if action in ["added", "removed"]:
-                return action
-            return action_word(key)
-
-        def value_change(v1, v2, text):
-            return f"{text}: {v1} -> {v2}"
-
-        def value_add_remove(v1):
-            return f"{v1}"
-
-        def diff_rec(action, key, value, level):
-            action = change_action(action, key)
-            if key in ["$insert", "$delete"]:
-                if isinstance(value, dict):
-                    for inner_key, inner_value in value.items():
-                        diff_rec(action, inner_key, inner_value, level + 2)
-                else:
-                    for inner_value in value:
-                        diff_rec(action, "", inner_value, level + 2)
-            elif isinstance(value, list):
-                if len(value):
-                    if value[0] in ["$insert", "$delete"]:
-                        print("???", value)
-                    elif len(value) == 2 and value[0] == "" and value[1] != "":
-                        text = "added: " + value_add_remove(value[1])
-                    elif len(value) == 2 and value[1] == "" and value[0] != "":
-                        text = "removed: " + value_add_remove(value[1])
-                    elif (
-                        len(value) == 2
-                        and isinstance(value[0], int)
-                        and isinstance(value[1], int)
-                    ):
-                        text = value_change(value[0], value[1], key)
-                    elif (
-                        len(value) == 2
-                        and isinstance(value[1], dict)
-                        and (
-                            isinstance(value[0], int)
-                            or ((isinstance(value[0], str) and value[0].isdigit()))
-                        )
-                    ):
-                        changed_key = [
-                            i
-                            for i in value[1].keys()
-                            if i not in ["name", "desc", "id", "type"]
-                        ][0]
-                        text = f"added: {changed_key} {value[1][changed_key]}"
-                    elif len(value) == 2 and (
-                        isinstance(value[0], int)
-                        or ((isinstance(value[0], str) and value[0].isdigit()))
-                    ):
-                        if action == "added":
-                            text = f"{action} {value_add_remove(value[0])}"
-                        else:
-                            text = f"{action} {value_add_remove(value[1])}"
-                    elif len(value) == 2:
-                        text = value_change(value[0], value[1], key)
-                    else:
-                        print("unknown list type value", value)
-                    print(" " * level + text)
-                    pass
-            elif isinstance(value, dict):
-                for inner_key, inner_value in value.items():
-                    inner_action = change_action("changed", inner_key)
-                    if (
-                        action
-                        in [
-                            "added",
-                            "removed",
+                    if action != "update" or key in ["$insert", "$delete"]:
+                        name_keys = ["name", "id", "type"]
+                        found = [
+                            self.get_name(change[i]) for i in name_keys if i in change
                         ]
-                        and not isinstance(inner_value, dict)
-                        and not isinstance(inner_value, list)
-                    ):
-                        if action == "added":
-                            text = f"{action} {value_add_remove(value[1])}"
-                        else:
-                            text = f"{action} {value_add_remove(value[0])}"
-                        print(" " * level + text)
-                    elif inner_action in ["added", "removed"]:
-                        pass
-                    elif isinstance(inner_value, list):
-                        text = f"{inner_action} {inner_key}:"
-                        print(" " * level + text)
-                        pass
-                    elif (
-                        inner_key
-                        and key
-                        and not (
-                            isinstance(inner_key, int)
-                            or (isinstance(inner_key, str) and inner_key.isdigit())
-                        )
-                    ):
-                        text = f"{inner_action} {inner_key}:"
-                        print(" " * level + text)
-                    elif inner_key and not (
-                        isinstance(inner_key, int)
-                        or (isinstance(inner_key, str) and inner_key.isdigit())
-                    ):
-                        text = f"{action} {inner_key}:"
-                        print(" " * level + text)
-                    elif not key:
-                        # print("no key", key, inner_key)
-                        pass
-                    elif not inner_key:
-                        text = f"{action} {key}:"
-                        print(" " * level + text)
+                        new_key = found[0] if len(found) else key
+                        action_word = "added" if "insert" in action else "removed"
+                        print(action_word, new_key, file=file)
                     else:
-                        # print("dict no print", value)
-                        pass
+                        print(key.capitalize(), file=file)
+                        output = self.process_diff(change, [])
+                        for line in output:
+                            print(line, file=file)
+                        print(file=file)
+                print(file=file)
 
-                    # print(inner_key, inner_action, action)
-                    diff_rec(action, inner_key, inner_value, level + 2)
-            elif isinstance(value, str):
-                # print("str value ???", value)
-                return value
+    def process_diff(self, diff, path=None):
+        result = []
 
-        # print(value)
-        diff_rec("update", key, value, 0)
+        def get_descriptive_text(obj):
+            if "type" in obj:
+                if obj["type"] == "item" and "item" in obj:
+                    obj = json.loads(obj["item"])
+                elif obj["type"] == "pfpOption":
+                    obj = {"item": "pfpOption"}
+
+            changed_keys = [
+                i for i in obj.keys() if i not in ["name", "desc", "id", "type"]
+            ]
+            if not len(changed_keys):
+                changed_keys = [
+                    i for i in obj.keys() if i in ["name", "desc", "id", "type"]
+                ]
+            changed_key = changed_keys[0]
+            return f"{changed_key} {obj[changed_key]}"
+
+        def build_text(path, text_path, value):
+            if len(value) == 2:
+                old_value, new_value = value
+                if isinstance(new_value, dict):
+                    new_value = get_descriptive_text(new_value)
+                if isinstance(old_value, int) and not isinstance(new_value, int):
+                    if "$insert" in path:
+                        text = f"{text_path} added {new_value}"
+                    elif "$delete" in path:
+                        text = f"{text_path} removed {new_value}"
+                elif old_value and not new_value:
+                    text = f"{text_path} removed {old_value}"
+                elif not old_value and new_value:
+                    text = f"{text_path} added {new_value}"
+                else:
+                    text = f"{text_path} changed from {old_value} to {new_value}"
+            else:
+                print("weird value length", value)
+            return text
+
+        for key, value in diff.items():
+            display_key = (
+                "" if "reroll-this" in key or key.isdigit() or key == "" else key
+            )
+            if display_key and display_key not in path:
+                path.append(display_key)
+            filter_words = ["$delete", "$insert"]
+            filtered_path = [i for i in path if i not in filter_words]
+            new_path = "->".join(filtered_path)
+
+            if (
+                isinstance(value, list)
+                and len(value) == 2
+                and not isinstance(value[0], list)
+            ):
+                text = build_text(path, new_path, value)
+                result.append(text)
+
+            elif isinstance(value, dict):
+                result += self.process_diff(value, path)
+            elif isinstance(value, list):
+                for v in value:
+                    if isinstance(v, dict):
+                        result += self.process_diff(v, path)
+                    elif isinstance(v, list) and len(v) == 2:
+                        text = build_text(path, new_path, v)
+                        result.append(text)
+
+        return result
 
 
 def main():
@@ -434,9 +270,8 @@ def main():
     )  # ['parallaxes', 'pfp_options', 'items', 'achievements', 'activities', 'locations', 'attributes', 'buildings', 'characters', 'default_unlocks', 'factions', 'game_data', 'items', 'job_boards', 'banned_keywords', 'keywords', 'loot_tables', 'pfp_option_groups', 'reward_progress', 'routes', 'services', 'shops', 'stats', 'terrain_modifiers']
 
     d = DiffTool()
-    d.create_diff(path_1, path_2, "324_diff.json")
-    d.pretty_print_2()
-    # d.pretty_print()
+    d.create_diff(path_0, path_1, "323_diff.json")
+    d.pretty_print_2(output_filename="changelog.txt")
 
 
 if __name__ == "__main__":
