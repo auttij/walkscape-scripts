@@ -206,12 +206,12 @@ class DiffTool:
                     obj = {"item": "pfpOption"}
 
             changed_keys = [
-                i for i in obj.keys() if i not in ["name", "desc", "id", "type"]
+                i
+                for i in obj.keys()
+                if i not in ["name", "desc", "id", "type", "save", "unlocked"]
             ]
             if not len(changed_keys):
-                changed_keys = [
-                    i for i in obj.keys() if i in ["name", "desc", "id", "type"]
-                ]
+                changed_keys = [i for i in obj.keys() if i in ["name", "desc", "id"]]
             changed_key = changed_keys[0]
             return f"{changed_key} {obj[changed_key]}"
 
@@ -275,8 +275,9 @@ def main():
     )  # ['parallaxes', 'pfp_options', 'items', 'achievements', 'activities', 'locations', 'attributes', 'buildings', 'characters', 'default_unlocks', 'factions', 'game_data', 'items', 'job_boards', 'banned_keywords', 'keywords', 'loot_tables', 'pfp_option_groups', 'reward_progress', 'routes', 'services', 'shops', 'stats', 'terrain_modifiers']
 
     d = DiffTool()
-    d.create_diff(path_0, path_1, "324_diff.json")
-    d.pretty_print_2(output_filename="changelog.txt")
+    d.create_diff(path_0, path_2, "322-324_diff.json")
+    d.pretty_print_2(output_filename="322-324-changelog.txt")
+    # d.pretty_print_2()
 
 
 if __name__ == "__main__":
