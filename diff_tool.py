@@ -164,8 +164,7 @@ class DiffTool:
         return populated_diff
 
     def pretty_print_2(self, output_filename=None):
-        fname = output_filename if output_filename else sys.stdout
-        with open(fname, "w") as file:
+        def pp_wrapper(file):
             for category in self.diff:
                 print(f"====== {category.capitalize()} ======\n", file=file)
                 diff = self.diff[category]
@@ -189,6 +188,12 @@ class DiffTool:
                             print(line, file=file)
                         print(file=file)
                 print(file=file)
+
+        if output_filename:
+            with open(output_filename, "w") as file:
+                pp_wrapper(file)
+        else:
+            pp_wrapper(sys.stdout)
 
     def process_diff(self, diff, path=None):
         result = []
@@ -270,7 +275,7 @@ def main():
     )  # ['parallaxes', 'pfp_options', 'items', 'achievements', 'activities', 'locations', 'attributes', 'buildings', 'characters', 'default_unlocks', 'factions', 'game_data', 'items', 'job_boards', 'banned_keywords', 'keywords', 'loot_tables', 'pfp_option_groups', 'reward_progress', 'routes', 'services', 'shops', 'stats', 'terrain_modifiers']
 
     d = DiffTool()
-    d.create_diff(path_0, path_1, "323_diff.json")
+    d.create_diff(path_0, path_1, "324_diff.json")
     d.pretty_print_2(output_filename="changelog.txt")
 
 
